@@ -3,52 +3,26 @@ import math as mat
 
 
 class Elem4:
+    ID=0
     nE = 4
     n = 1 / mat.sqrt(3)
     pcE = np.array([-n, n, n, -n])
     pcN = np.array([-n, -n, n, n])
-    dNdN = np.array([[0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0]])
-    dNdE = np.array([[0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0]])
-    dNdX = np.array([[0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0]])
-    dNdY = np.array([[0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0],
-                     [0.0, 0.0, 0.0, 0.0]])
+    dNdN = np.zeros([4, 4])
+    dNdE = np.zeros([4, 4])
+    dNdX = np.zeros([4, 4])
+    dNdY = np.zeros([4, 4])
     detJ = [0.0, 0.0, 0.0, 0.0]
-    jakob = np.array([[[0.0, 0.0], [0.0, 0.0]],
-                      [[0.0, 0.0], [0.0, 0.0]],
-                      [[0.0, 0.0], [0.0, 0.0]],
-                      [[0.0, 0.0], [0.0, 0.0]]])
-    jakob_odwr = np.array([[[0.0, 0.0], [0.0, 0.0]],
-                           [[0.0, 0.0], [0.0, 0.0]],
-                           [[0.0, 0.0], [0.0, 0.0]],
-                           [[0.0, 0.0], [0.0, 0.0]]])
-    globalneH = np.array([[[0.0, 0.0], [0.0, 0.0]],
-                          [[0.0, 0.0], [0.0, 0.0]],
-                          [[0.0, 0.0], [0.0, 0.0]],
-                          [[0.0, 0.0], [0.0, 0.0]]])
+    jakob = np.zeros([4, 2, 2])
+    jakob_odwr = np.zeros([4, 2, 2])
+    globalneH = np.zeros([4, 2, 2])
 
     def __init__(self, elem_id, x0, x1, x2, x3, y0, y1, y2, y3):
         self.ID = elem_id
         self.x = np.array([x0, x1, x2, x3])
         self.y = np.array([y0, y1, y2, y3])
-        self.suma_H = np.array([[0.0, 0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0, 0.0]])
-        self.lokalneH = np.array([[[0.0, 0.0], [0.0, 0.0]],
-                                  [[0.0, 0.0], [0.0, 0.0]],
-                                  [[0.0, 0.0], [0.0, 0.0]],
-                                  [[0.0, 0.0], [0.0, 0.0]]])
+        self.suma_H = np.zeros([4, 4])
+        self.lokalneH = np.zeros([4, 4])
 
     def pochodne(self):
         for x in range(self.nE):
@@ -108,16 +82,8 @@ class Elem4:
                 # print(y, "dN/dY=", self.dNdY[x, y])
 
     def macierzH(self):
-        dNdXdNdXT = np.array(
-            [[[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]])
-        dNdYdNdYT = np.array(
-            [[[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]])
+        dNdXdNdXT = np.zeros([4,4,4])
+        dNdYdNdYT = np.zeros([4,4,4])
 
         for x in range(self.nE):
             for y in range(4):
@@ -126,11 +92,7 @@ class Elem4:
                     dNdYdNdYT[x, y, z] = self.dNdY[x, y] * self.dNdY[x, z]
 
         # suma dN/dX*dN/dX + dN/dY*dN/dY
-        suma_ilocz = np.array(
-            [[[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]])
+        suma_ilocz = np.zeros([4,4,4])
         for x in range(self.nE):
             for y in range(4):
                 for z in range(4):
@@ -139,11 +101,7 @@ class Elem4:
 
         # pojedyncze macierze
         wsp_K = 25.0
-        H = np.array(
-            [[[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-             [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]])
+        H = np.zeros([4,4,4])
         for x in range(self.nE):
             for y in range(4):
                 for z in range(4):
@@ -170,16 +128,15 @@ class SOE:
     def __init__(self, nE):
         self.globalneH = np.zeros(shape=(nE * nE, nE * nE))
         print("nE: ", nE)
-        przejsc = nE * nE
-        #wiersze:
-        for k in range(przejsc):
-            #self.globalneH[x]=x
-            #kolumny:
-            for i in range(przejsc):
-                #self.globalneH[x,y]=y
-                #wartości:
-                for j in range(przejsc):
-                    self.globalneH[x,y] = z
+        # wiersze:
+        # for k in range(przejsc):
+        # self.globalneH[x]=x
+        # kolumny:
+        #   for i in range(przejsc):
+        # self.globalneH[x,y]=y
+        # wartości:
+        #       for j in range(przejsc):
+        # self.globalneH[x,y] = z
         print(self.globalneH)
 
 
@@ -193,7 +150,7 @@ h0 = mes0.suma_H
 print(h0)
 
 gg = SOE(4)
-#print(gg.globalneH)
+# print(gg.globalneH)
 
 # agregacja:
 # for i in range(4):
