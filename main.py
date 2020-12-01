@@ -2,12 +2,60 @@ import numpy as np
 import math as mat
 
 
+class Node:
+    def __init__(self, x, y, t):
+        # self.nodeID = id
+        self.x = x
+        self.y = y
+        self.t0 = t
+
+
+class GlobalData:
+    # TODO zrobic zczytywanie z pliku
+    # jest póki co na sztywno
+    def __init__(self):
+        self.H = 0.1  # wysokosc
+        self.W = 0.1  # szerokosc
+        self.nE = (self.nH - 1) * (self.nW - 1)  # l elementow
+        self.nH = 4  # liczba wezlow na wysokosc
+        self.nW = 4  # liczba wezlow na szerokosc
+        self.nN = self.nH * self.nW  # l wezlow
+        self.k = 25  # wsp przewodzenia ciepla
+        self.c = 700  # pojemnosc cieplna
+        self.ro = 7800  # gestosc
+        self.t = 100  # temp poczatkowa
+
+
+class SOE:
+    # TODO dokończyć agregacje macierzy
+    def __init__(self, nE):
+        self.globalneH = np.zeros(shape=(nE, nE))
+        print("nE: ", nE)
+        print(self.globalneH)
+
+
+class ElemUni4:
+    # TODO zrobić dla punktów całkowania
+    def __init__(self, npc):
+        self.npc = npc
+        self.N = []
+        self.E = []
+        self.wagi = []
+        if npc == 2:
+            a = 1 / mat.sqrt(3)
+            # for x in range (npc):
+
+
 class Elem4:
-    ID=0
+    elemID = [0, 1, 2, 3]
     nE = 4
+
+    ### get deriv for each point
     n = 1 / mat.sqrt(3)
     pcE = np.array([-n, n, n, -n])
     pcN = np.array([-n, -n, n, n])
+    ###
+
     dNdN = np.zeros([4, 4])
     dNdE = np.zeros([4, 4])
     dNdX = np.zeros([4, 4])
@@ -17,8 +65,7 @@ class Elem4:
     jakob_odwr = np.zeros([4, 2, 2])
     globalneH = np.zeros([4, 2, 2])
 
-    def __init__(self, elem_id, x0, x1, x2, x3, y0, y1, y2, y3):
-        self.ID = elem_id
+    def __init__(self, x0, x1, x2, x3, y0, y1, y2, y3):
         self.x = np.array([x0, x1, x2, x3])
         self.y = np.array([y0, y1, y2, y3])
         self.suma_H = np.zeros([4, 4])
@@ -82,8 +129,8 @@ class Elem4:
                 # print(y, "dN/dY=", self.dNdY[x, y])
 
     def macierzH(self):
-        dNdXdNdXT = np.zeros([4,4,4])
-        dNdYdNdYT = np.zeros([4,4,4])
+        dNdXdNdXT = np.zeros([4, 4, 4])
+        dNdYdNdYT = np.zeros([4, 4, 4])
 
         for x in range(self.nE):
             for y in range(4):
@@ -92,7 +139,7 @@ class Elem4:
                     dNdYdNdYT[x, y, z] = self.dNdY[x, y] * self.dNdY[x, z]
 
         # suma dN/dX*dN/dX + dN/dY*dN/dY
-        suma_ilocz = np.zeros([4,4,4])
+        suma_ilocz = np.zeros([4, 4, 4])
         for x in range(self.nE):
             for y in range(4):
                 for z in range(4):
@@ -101,7 +148,7 @@ class Elem4:
 
         # pojedyncze macierze
         wsp_K = 25.0
-        H = np.zeros([4,4,4])
+        H = np.zeros([4, 4, 4])
         for x in range(self.nE):
             for y in range(4):
                 for z in range(4):
@@ -118,29 +165,13 @@ class Elem4:
         # print("Element " + str(self.ID) + ", suma macierzy H: " + "\n", self.suma_H)
         return self.suma_H
 
-    # def agregacja(self):
-    #    self.suma_H
-
     pass
 
 
-class SOE:
-    def __init__(self, nE):
-        self.globalneH = np.zeros(shape=(nE * nE, nE * nE))
-        print("nE: ", nE)
-        # wiersze:
-        # for k in range(przejsc):
-        # self.globalneH[x]=x
-        # kolumny:
-        #   for i in range(przejsc):
-        # self.globalneH[x,y]=y
-        # wartości:
-        #       for j in range(przejsc):
-        # self.globalneH[x,y] = z
-        print(self.globalneH)
+Nodes = [Node(0, 0), Node(4, 0), Node(4, 6), Node(0, 6)]
 
-
-mes0 = Elem4(1, 0.0, 0.033333, 0.0333, 0.0, 0.0, 0.0, 0.0333, 0.0333)
+"""
+mes0 = Elem4(0.0, 0.033333, 0.0333, 0.0, 0.0, 0.0, 0.0333, 0.0333)
 print("x =", mes0.x, "y =", mes0.y, "\nMacierz H:")
 mes0.pochodne()
 mes0.jakobian()
@@ -150,8 +181,9 @@ h0 = mes0.suma_H
 print(h0)
 
 gg = SOE(4)
-# print(gg.globalneH)
+print(mes0.elemID[0])
 
 # agregacja:
 # for i in range(4):
 #    x = mes0.x[0]
+"""
